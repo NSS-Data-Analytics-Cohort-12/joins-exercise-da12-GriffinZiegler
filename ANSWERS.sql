@@ -2,7 +2,7 @@
 
 SELECT film_title, release_year, worldwide_gross
 FROM specs
-INNER JOIN revenue
+FULL JOIN revenue
 USING(movie_id)
 ORDER BY worldwide_gross ASC
 LIMIT 1;
@@ -50,11 +50,21 @@ LIMIT 5;
 
 -- 6. How many movies in the dataset are distributed by a company which is not headquartered in California? Which of these movies has the highest imdb rating?
 
-SELECT company_name, headquarters, imdb_rating
+SELECT company_name, headquarters, film_title, imdb_rating
 FROM specs
-LEFT JOIN rating USING(movie_id)
+FULL JOIN rating USING(movie_id)
 FULL JOIN distributors ON specs.domestic_distributor_id = distributors.distributor_id
 WHERE headquarters NOT LIKE '%CA%'
 ORDER BY imdb_rating;
 
 -- 7. Which have a higher average rating, movies which are over two hours long or movies which are under two hours?
+
+SELECT 'Greater Than 2 Hours' AS length_movies, AVG(imdb_rating) AS avg_imdb_rating
+FROM specs
+JOIN rating USING(movie_id)
+WHERE length_in_min > 120
+UNION
+SELECT 'Less Than 2 Hours' AS length_movies, AVG(imdb_rating) AS avg_imdb_rating
+FROM specs
+JOIN rating USING(movie_id)
+WHERE length_in_min < 120
